@@ -1,26 +1,26 @@
+const path = require('path');
+
 const express = require('express');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 
-const app = express()
-const port = 3000
-const path = require('path')
+const errorController = require('./controllers/error');
 
-const adminroutes = require('./Routes/admin')
-const shoproutes = require('./Routes/shop')
-const contactRoutes = require('./Routes/contactus')
+const app = express();
 
-app.use(bodyParser.urlencoded({extended: false}))
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
-app.use('/admin',adminroutes)
-app.use(shoproutes)
-app.use(contactRoutes)
-app.use(express.static(path.join(__dirname,'public')))
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
+const contactRoutes = require('./routes/contact')
 
-app.use((req,res,next) => {
-      res.status(404).sendFile(path.join(__dirname,'views','404.html'))   
-})
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/admin', adminRoutes);
+app.use(shopRoutes);
+app.use(contactRoutes);
 
-app.listen(port, () => {
-      console.log(`server is running on port ${port}`)
-});
+app.use(errorController.get404);
+
+app.listen(3000);
